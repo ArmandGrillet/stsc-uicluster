@@ -14,6 +14,7 @@ import scalafx.stage.FileChooser
 import scalafx.stage.FileChooser.ExtensionFilter
 import scalafx.scene.control.Alert
 import scalafx.scene.control.Alert._
+import scalafx.scene.control.Label
 
 import java.awt.{Color, Paint}
 import scala.collection.mutable.ListBuffer
@@ -32,7 +33,7 @@ import java.awt.Graphics2D
 import scalafx.embed.swing.SwingFXUtils
 
 @sfxml
-class Controller(private val root: AnchorPane, private val min: TextField, private val max: TextField, private val dataset: ImageView, private val clusters: ImageView) {
+class Controller(private val root: AnchorPane, private val min: TextField, private val max: TextField, private val dataset: ImageView, private val clusters: ImageView, private val qualities: Label) {
 
     private var displayedDataset = DenseMatrix.zeros[Double](0, 0)
 
@@ -62,18 +63,19 @@ class Controller(private val root: AnchorPane, private val min: TextField, priva
         }
 
         if (ready) {
-            val (_, correctClusters) = stsc.cluster(displayedDataset)
+            val (clustersQualities, correctClusters) = stsc.cluster(displayedDataset)
             val colors = List(Color.RED, Color.GREEN, Color.BLUE, Color.BLACK, Color.MAGENTA, Color.CYAN, Color.YELLOW)
 
             val f = Figure()
             f.visible = false
-            f.width = 400
-            f.height = 400
+            f.width = clusters.getBoundsInParent().getWidth().toInt
+            f.height = clusters.getBoundsInParent().getHeight().toInt
             val p = f.subplot(0)
             p.title = "Clusters"
 
             p += scatter(displayedDataset(::, 0), displayedDataset(::, 1), {(_:Int) => 0.01}, {(pos:Int) => colors(correctClusters(pos))}) // Display the observations.
             clusters.image = SwingFXUtils.toFXImage(imageToFigure(f), null)
+            qualities.text = clustersQualities.mkString(" | ")
         }
     }
 
@@ -113,16 +115,17 @@ class Controller(private val root: AnchorPane, private val min: TextField, priva
     private def showDataset() {
         val f = Figure()
         f.visible = false
-        f.width = 400
-        f.height = 400
+        f.width = dataset.getBoundsInParent().getWidth().toInt
+        f.height = dataset.getBoundsInParent().getHeight().toInt
         val p = f.subplot(0)
         p.title = "Dataset"
         p += scatter(displayedDataset(::, 0), displayedDataset(::, 1), {(_:Int) => 0.01}, {(pos:Int) => Color.BLACK}) // Display the observations.
         dataset.image = SwingFXUtils.toFXImage(imageToFigure(f), null)
+        qualities.text = ""
     }
 
     private def imageToFigure(f: Figure): BufferedImage = {
-        val image = new BufferedImage(400, 400, BufferedImage.TYPE_INT_ARGB)
+        val image = new BufferedImage(f.width, f.height, BufferedImage.TYPE_INT_ARGB)
         val g2d = image.createGraphics()
         f.drawPlots(g2d)
         g2d.dispose

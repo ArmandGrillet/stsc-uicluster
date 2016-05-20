@@ -25,10 +25,3 @@ libraryDependencies ++= Seq(
 
 // For @fxml
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
-
-// Remove WARNING: Resource "com/sun/javafx/scene/control/skin/modena/modena.css" not found.
-unmanagedJars in Compile += {
-    val ps = new sys.SystemProperties
-    val jh = ps("java.home")
-    Attributed.blank(file(jh) / "lib/ext/jfxrt.jar")
-}

@@ -25,3 +25,10 @@ libraryDependencies ++= Seq(
 
 // For @fxml
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+
+// To display the Madena theme.
+unmanagedJars in Compile += {
+    val ps = new sys.SystemProperties
+    val jh = ps("java.home")
+    Attributed.blank(file(jh) / "lib/ext/jfxrt.jar")
+}

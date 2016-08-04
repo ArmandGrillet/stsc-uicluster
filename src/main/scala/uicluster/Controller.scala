@@ -26,7 +26,7 @@ import breeze.numerics._
 import breeze.stats._
 import breeze.plot._
 import java.io.File
-import stsc._
+import stsc.STSC
 
 @sfxml
 class Controller(private val root: AnchorPane, private val selectDataset: ChoiceBox[String], private val min: TextField, private val max: TextField, private val dataset: ImageView, private val clusters: ImageView, private val qualities: Label) {
@@ -66,7 +66,7 @@ class Controller(private val root: AnchorPane, private val selectDataset: Choice
         }
 
         if (ready) {
-            val (clustersQualities, correctClusters) = stsc.cluster(displayedDataset)
+            val (_, clustersQualities, correctClusters) = STSC.cluster(displayedDataset)
             val colors = List(Color.RED, Color.GREEN, Color.BLUE, Color.BLACK, Color.MAGENTA, Color.CYAN, Color.YELLOW)
 
             val f = Figure()
